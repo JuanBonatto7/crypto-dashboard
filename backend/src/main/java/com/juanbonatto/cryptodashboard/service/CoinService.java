@@ -31,6 +31,7 @@ public class CoinService {
     private final RestClient coinGeckoRestClient;
 
     private volatile CacheEntry<List<CoinDto>> marketsCache;
+    private final Map<String, CacheEntry<List<CoinDto>>> marketsByIdsCache = new ConcurrentHashMap<>();
     private final Map<String, CacheEntry<CoinDetailDto>> detailCache = new ConcurrentHashMap<>();
     private final Map<String, CacheEntry<List<MarketChartPointDto>>> chartCache = new ConcurrentHashMap<>();
 
@@ -44,14 +45,35 @@ public class CoinService {
             return cached.value();
         }
 
-        List<CoinGeckoMarketItem> raw = fetch(
-                "/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=24h",
-                new ParameterizedTypeReference<>() {}
+        List<CoinDto> mapped = fetchMarkets(
+                "/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=24h"
         );
-
-        List<CoinDto> mapped = raw == null ? List.of() : raw.stream().map(this::toDto).toList();
         marketsCache = new CacheEntry<>(mapped, Instant.now().plus(MARKETS_TTL));
         return mapped;
+    }
+
+    public List<CoinDto> getMarketsByIds(List<String> ids) {
+        if (ids.isEmpty()) {
+            return List.of();
+        }
+
+        String cacheKey = String.join(",", ids);
+        CacheEntry<List<CoinDto>> cached = marketsByIdsCache.get(cacheKey);
+        if (cached != null && cached.isValid()) {
+            return cached.value();
+        }
+
+        List<CoinDto> mapped = fetchMarkets(
+                "/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=24h&ids="
+                        + cacheKey
+        );
+        marketsByIdsCache.put(cacheKey, new CacheEntry<>(mapped, Instant.now().plus(MARKETS_TTL)));
+        return mapped;
+    }
+
+    private List<CoinDto> fetchMarkets(String uri) {
+        List<CoinGeckoMarketItem> raw = fetch(uri, new ParameterizedTypeReference<>() {});
+        return raw == null ? List.of() : raw.stream().map(this::toDto).toList();
     }
 
     public CoinDetailDto getCoinDetail(String id) {

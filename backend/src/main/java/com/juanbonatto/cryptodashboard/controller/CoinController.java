@@ -28,7 +28,10 @@ public class CoinController {
     }
 
     @GetMapping
-    public List<CoinDto> getMarkets() {
+    public List<CoinDto> getMarkets(@RequestParam(required = false) String ids) {
+        if (ids != null && !ids.isBlank()) {
+            return coinService.getMarketsByIds(List.of(ids.split(",")));
+        }
         return coinService.getMarkets();
     }
 
