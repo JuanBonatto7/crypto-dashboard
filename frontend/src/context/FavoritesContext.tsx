@@ -1,41 +1,56 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
+import { addFavorite, fetchFavorites, removeFavorite } from '../api/backend'
 
 interface FavoritesContextValue {
   favorites: string[]
+  loading: boolean
   isFavorite: (id: string) => boolean
   toggleFavorite: (id: string) => void
 }
 
 const FavoritesContext = createContext<FavoritesContextValue | undefined>(undefined)
 
-const STORAGE_KEY = 'crypto-dashboard-favorites'
-
-function getInitialFavorites(): string[] {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY)
-    return stored ? (JSON.parse(stored) as string[]) : []
-  } catch {
-    return []
-  }
-}
-
 export function FavoritesProvider({ children }: { children: ReactNode }) {
-  const [favorites, setFavorites] = useState<string[]>(getInitialFavorites)
+  const [favorites, setFavorites] = useState<string[]>([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(favorites))
-  }, [favorites])
+    let cancelled = false
+
+    fetchFavorites()
+      .then((data) => {
+        if (!cancelled) setFavorites(data.map((favorite) => favorite.coinId))
+      })
+      .catch(() => {
+        // Favorites are non-critical: if the backend is down, the rest of the app still works.
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false)
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   function isFavorite(id: string) {
     return favorites.includes(id)
   }
 
   function toggleFavorite(id: string) {
-    setFavorites((prev) => (prev.includes(id) ? prev.filter((f) => f !== id) : [...prev, id]))
+    const wasFavorite = favorites.includes(id)
+
+    // Optimistic update: reflect the change immediately, roll back if the request fails.
+    setFavorites((prev) => (wasFavorite ? prev.filter((f) => f !== id) : [...prev, id]))
+
+    const request = wasFavorite ? removeFavorite(id) : addFavorite(id).then(() => undefined)
+    request.catch(() => {
+      setFavorites((prev) => (wasFavorite ? [...prev, id] : prev.filter((f) => f !== id)))
+    })
   }
 
   return (
-    <FavoritesContext.Provider value={{ favorites, isFavorite, toggleFavorite }}>
+    <FavoritesContext.Provider value={{ favorites, loading, isFavorite, toggleFavorite }}>
       {children}
     </FavoritesContext.Provider>
   )

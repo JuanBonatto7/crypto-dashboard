@@ -29,16 +29,16 @@ export function Dashboard() {
     const sorted = [...filtered].sort((a, b) => {
       switch (sort) {
         case 'price_desc':
-          return b.current_price - a.current_price
+          return b.currentPrice - a.currentPrice
         case 'price_asc':
-          return a.current_price - b.current_price
+          return a.currentPrice - b.currentPrice
         case 'change_desc':
-          return (b.price_change_percentage_24h ?? 0) - (a.price_change_percentage_24h ?? 0)
+          return (b.priceChangePercentage24h ?? 0) - (a.priceChangePercentage24h ?? 0)
         case 'change_asc':
-          return (a.price_change_percentage_24h ?? 0) - (b.price_change_percentage_24h ?? 0)
+          return (a.priceChangePercentage24h ?? 0) - (b.priceChangePercentage24h ?? 0)
         case 'market_cap_desc':
         default:
-          return b.market_cap - a.market_cap
+          return b.marketCap - a.marketCap
       }
     })
 

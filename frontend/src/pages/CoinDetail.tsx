@@ -25,8 +25,7 @@ export function CoinDetail() {
   if (error || !coin) return <ErrorMessage message={error ?? 'No se encontró la moneda.'} />
 
   const favorite = isFavorite(coin.id)
-  const market = coin.market_data
-  const change = market.price_change_percentage_24h
+  const change = coin.priceChangePercentage24h
   const positive = (change ?? 0) >= 0
 
   return (
@@ -37,12 +36,12 @@ export function CoinDetail() {
 
       <div className="mt-4 flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <img src={coin.image.large} alt={coin.name} className="h-12 w-12" />
+          <img src={coin.image} alt={coin.name} className="h-12 w-12" />
           <div>
             <h1 className="text-2xl font-bold">
               {coin.name} <span className="text-slate-400 uppercase">{coin.symbol}</span>
             </h1>
-            <p className="text-sm text-slate-500">Ranking #{coin.market_cap_rank}</p>
+            <p className="text-sm text-slate-500">Ranking #{coin.marketCapRank}</p>
           </div>
         </div>
         <button
@@ -55,7 +54,7 @@ export function CoinDetail() {
       </div>
 
       <div className="mt-6 flex items-end gap-3">
-        <p className="text-3xl font-bold">{formatCurrency(market.current_price.usd)}</p>
+        <p className="text-3xl font-bold">{formatCurrency(coin.currentPrice)}</p>
         <p className={positive ? 'font-medium text-emerald-500' : 'font-medium text-rose-500'}>
           {formatPercentage(change)} (24h)
         </p>
@@ -83,19 +82,19 @@ export function CoinDetail() {
       </div>
 
       <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
-        <StatCard label="Market cap" value={formatCompactNumber(market.market_cap.usd)} />
-        <StatCard label="Volumen 24h" value={formatCompactNumber(market.total_volume.usd)} />
-        <StatCard label="Máximo 24h" value={formatCurrency(market.high_24h.usd)} />
-        <StatCard label="Mínimo 24h" value={formatCurrency(market.low_24h.usd)} />
-        <StatCard label="Máximo histórico" value={formatCurrency(market.ath.usd)} />
-        <StatCard label="Suministro circulante" value={formatCompactNumber(market.circulating_supply)} />
+        <StatCard label="Market cap" value={formatCompactNumber(coin.marketCap)} />
+        <StatCard label="Volumen 24h" value={formatCompactNumber(coin.totalVolume)} />
+        <StatCard label="Máximo 24h" value={formatCurrency(coin.high24h)} />
+        <StatCard label="Mínimo 24h" value={formatCurrency(coin.low24h)} />
+        <StatCard label="Máximo histórico" value={formatCurrency(coin.ath)} />
+        <StatCard label="Suministro circulante" value={formatCompactNumber(coin.circulatingSupply)} />
       </div>
 
-      {coin.description.en && (
+      {coin.description && (
         <div className="mt-8">
           <h2 className="mb-2 text-lg font-semibold">Acerca de {coin.name}</h2>
           <p className="max-w-3xl text-sm leading-relaxed text-slate-600 dark:text-slate-400">
-            {stripHtml(coin.description.en).split('. ').slice(0, 4).join('. ')}
+            {stripHtml(coin.description).split('. ').slice(0, 4).join('. ')}
           </p>
         </div>
       )}

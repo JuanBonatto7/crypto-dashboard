@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useFavorites } from '../context/FavoritesContext'
-import { fetchCoinsByIds } from '../api/coingecko'
+import { fetchCoinsByIds } from '../api/backend'
 import type { Coin } from '../types/coin'
 import { Loader } from '../components/Loader'
 import { ErrorMessage } from '../components/ErrorMessage'

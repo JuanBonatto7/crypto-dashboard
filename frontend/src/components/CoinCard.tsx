@@ -10,7 +10,7 @@ interface CoinCardProps {
 export function CoinCard({ coin }: CoinCardProps) {
   const { isFavorite, toggleFavorite } = useFavorites()
   const favorite = isFavorite(coin.id)
-  const change = coin.price_change_percentage_24h
+  const change = coin.priceChangePercentage24h
   const positive = (change ?? 0) >= 0
 
   return (
@@ -41,14 +41,14 @@ export function CoinCard({ coin }: CoinCardProps) {
 
       <div className="flex items-end justify-between">
         <div>
-          <p className="text-lg font-bold">{formatCurrency(coin.current_price)}</p>
+          <p className="text-lg font-bold">{formatCurrency(coin.currentPrice)}</p>
           <p className={positive ? 'text-sm font-medium text-emerald-500' : 'text-sm font-medium text-rose-500'}>
             {formatPercentage(change)}
           </p>
         </div>
         <div className="text-right text-xs text-slate-400">
           <p>Market cap</p>
-          <p className="font-medium text-slate-500 dark:text-slate-300">{formatCompactNumber(coin.market_cap)}</p>
+          <p className="font-medium text-slate-500 dark:text-slate-300">{formatCompactNumber(coin.marketCap)}</p>
         </div>
       </div>
     </Link>

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { fetchCoinDetail, fetchMarketChart } from '../api/coingecko'
+import { fetchCoinDetail, fetchMarketChart } from '../api/backend'
 import type { CoinDetail, MarketChartPoint } from '../types/coin'
 
 interface UseCoinDetailResult {

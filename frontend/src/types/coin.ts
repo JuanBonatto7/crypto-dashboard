@@ -1,42 +1,48 @@
+// These shapes mirror the DTOs returned by our own backend
+// (backend/src/main/java/com/juanbonatto/cryptodashboard/dto), not CoinGecko's raw response.
+
 export interface Coin {
   id: string
   symbol: string
   name: string
   image: string
-  current_price: number
-  market_cap: number
-  market_cap_rank: number
-  total_volume: number
-  high_24h: number
-  low_24h: number
-  price_change_percentage_24h: number | null
+  currentPrice: number
+  marketCap: number
+  marketCapRank: number
+  totalVolume: number
+  high24h: number
+  low24h: number
+  priceChangePercentage24h: number | null
 }
 
 export interface CoinDetail {
   id: string
   symbol: string
   name: string
-  description: { en: string }
-  image: { large: string }
-  market_cap_rank: number
-  market_data: {
-    current_price: { usd: number }
-    market_cap: { usd: number }
-    total_volume: { usd: number }
-    high_24h: { usd: number }
-    low_24h: { usd: number }
-    price_change_percentage_24h: number | null
-    price_change_percentage_7d: number | null
-    ath: { usd: number }
-    ath_change_percentage: { usd: number }
-    circulating_supply: number
-  }
-  links: { homepage: string[] }
+  description: string
+  image: string
+  marketCapRank: number
+  currentPrice: number
+  marketCap: number
+  totalVolume: number
+  high24h: number
+  low24h: number
+  priceChangePercentage24h: number | null
+  priceChangePercentage7d: number | null
+  ath: number
+  athChangePercentage: number
+  circulatingSupply: number
+  homepage: string
 }
 
 export interface MarketChartPoint {
   timestamp: number
   price: number
+}
+
+export interface Favorite {
+  coinId: string
+  createdAt: string
 }
 
 export type SortOption = 'market_cap_desc' | 'price_desc' | 'price_asc' | 'change_desc' | 'change_asc'
