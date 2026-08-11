@@ -39,7 +39,7 @@ export function Favorites() {
     <div className="mx-auto max-w-6xl px-4 py-8">
       <h1 className="mb-1 text-2xl font-bold">Tus favoritos</h1>
       <p className="mb-6 text-sm text-slate-500 dark:text-slate-400">
-        Guardados localmente en tu navegador con localStorage.
+        Guardados en el servidor, persistidos en la base de datos del backend.
       </p>
 
       {favorites.length === 0 && (
